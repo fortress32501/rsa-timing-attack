@@ -1,5 +1,6 @@
 import secrets
 import datetime
+from time import sleep
 
 def eucalg(a, b):
 	# make a the bigger one and b the lesser one
@@ -32,7 +33,9 @@ def modpow_guess(b, e, n, size):
 	r = 1
 	for i in range(size, -1, -1):
 		r = (r * r) % n
-		if (e >> i) & 1: r = (r * b) % n
+		if (e >> i) & 1: 
+			r = (r * b) % n
+			#sleep(0.01)
 	return r
 
 def modpow(b, e, n):
@@ -41,7 +44,7 @@ def modpow(b, e, n):
 	r = 1
 	for i in range(siz, -1, -1):
 		r = (r * r) % n
-		if (e >> i) & 1: 
+		if (e >> i) & 1:   
 			r = (r * b) % n
 	return r
 
