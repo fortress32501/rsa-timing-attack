@@ -29,24 +29,33 @@ def eucalg(a, b):
 		return ca
 
 def modpow_guess(b, e, n, size):
-	# calculate the result
 	r = 1
+	time = 0
 	for i in range(size, -1, -1):
+		start_time = datetime.datetime.now()
 		r = (r * r) % n
 		if (e >> i) & 1: 
 			r = (r * b) % n
 			#sleep(0.01)
-	return r
+		end_time = datetime.datetime.now()
+		time_diff = (end_time - start_time)
+		time_val = time_diff.total_seconds() * 1000000
+		time += time_val
+	return r, time
 
 def modpow(b, e, n):
-	siz = 256
-	# calculate the result
 	r = 1
-	for i in range(siz, -1, -1):
+	time = 0
+	for i in range(256, -1, -1):
+		start_time = datetime.datetime.now()		
 		r = (r * r) % n
 		if (e >> i) & 1:   
 			r = (r * b) % n
-	return r
+		end_time = datetime.datetime.now()
+		time_diff = (end_time - start_time)
+		time_val = time_diff.total_seconds() * 1000000
+		time += time_val
+	return r, time
 
 def keysgen(p, q):
 	n = p * q
@@ -129,6 +138,7 @@ def genprime(siz):
 def encrypt_bytes(data, key):
 	data = bytearray(data)
 	cdata = bytearray()
+	time = 0
 	for i in range(0, len(data), 256):
 		# read 256 bytes and store as long
 		# to m
@@ -139,11 +149,11 @@ def encrypt_bytes(data, key):
 			else:
 				m <<= 8
 		# encrypt m
-		c = modpow(m, key[0], key[1])
+		c, time = modpow(m, key[0], key[1])
 		# store c into cdata
 		for j in range(255, -1, -1):
 			cdata.append((c >> (j * 8)) & 255)
-	return bytes(cdata)
+	return bytes(cdata), time
 
 # both functions are essencially the same,
 # the only difference is in which key you use
@@ -152,6 +162,7 @@ decrypt_bytes = encrypt_bytes
 def encrypt_bytes_guess(data, key, guess, size):
 	data = bytearray(data)
 	cdata = bytearray()
+	time = 0
 	for i in range(0, len(data), 256):
 		# read 256 bytes and store as long
 		# to m
@@ -162,11 +173,12 @@ def encrypt_bytes_guess(data, key, guess, size):
 			else:
 				m <<= 8
 		# encrypt m
-		c = modpow_guess(m, guess, key[1], size)
+		c, time = modpow_guess(m, guess, key[1], size)
+
 		# store c into cdata
 		for j in range(255, -1, -1):
 			cdata.append((c >> (j * 8)) & 255)
-	return bytes(cdata)
+	return bytes(cdata), time
 
 # both functions are essencially the same,
 # the only difference is in which key you use

@@ -1,6 +1,7 @@
 import rsa_helper_functions as rsa
 import datetime
 import math
+import statistics
 
 def avg(list_avg):
     return sum(list_avg)/len(list_avg)
@@ -29,6 +30,8 @@ def prob(t, c, d, mean_1, std_dev_1, mean_0, std_dev_0):
     x0 = ((t-c) - (mean_0)) / (std_dev_0)
     prob_of_0 = density(t-c, mean_0, std_dev_0)
 
+    print(prob_of_1)
+    print(prob_of_0)
     return prob_of_1, prob_of_0
 
 def total_prob(list_t, list_c, d):
@@ -56,59 +59,67 @@ priv = keys['priv']
 pub = keys['pub']
 
 # From 54,800,000 runs
-d = 0.0015302280474455952
+d = 1.556249
 list_t = []
 list_c = []
+time = 0
 
 for i in range(100000):
-    msg = 67055495 + i**10
+    msg = 67055495 + i**7
     msg_bytes = msg.to_bytes(256, 'big')
-    enc = rsa.encrypt_bytes(msg_bytes, pub)
+    enc, temp = rsa.encrypt_bytes(msg_bytes, pub)
     
-    start_time = datetime.datetime.now()
-    dec = rsa.decrypt_bytes(enc, priv)
-    end_time = datetime.datetime.now()
-    time_diff = (end_time - start_time)
+    dec, time = rsa.decrypt_bytes(enc, priv)
     
     # appends time t to list
-    list_t.append(time_diff.total_seconds()*1000)
+    list_t.append(time)
 
-    guess = '110011000100011111001111001001001000010111110'
+    guess = '110011000100011111001111001001001000010110110'+'1'
     guess_num = int(guess, 2)
-    start_time1 = datetime.datetime.now()
-    dec1 = rsa.decrypt_bytes_guess(enc, priv, guess_num, 45)
-    end_time1 = datetime.datetime.now()
-    time_diff1 = (end_time1 - start_time1)
-
+    dec1, time = rsa.decrypt_bytes_guess(enc, priv, guess_num, len(guess))
+    
     # appends time c to list 
-    list_c.append(time_diff1.total_seconds()*1000)
+    list_c.append(time)
 
 test=0
 print(test.from_bytes(dec,'big'))
+#prob = total_prob(list_t, list_c, d)
+#print(prob)
 
-prob = total_prob(list_t, list_c, d)
-print(prob)
+#avg_t = avg(t)
+#std_dev_t = std_dev(t)
+#var_t = std_dev(t)**2
+#print(avg_t) = 1.7939273482142857
+#print(std_dev_t) = 6.6924724150218236
+#print(var_t) = 44.78918702582804
+#print(len(t)) = 112000000
+var_t = 44.78918702582804
 
-# execution_time = total_time * 1000 / 400000
-# print(execution_time)
+# # From 2,000,000 runs
+# var_e = 0.00021535195762530283
+# e_avg = 0.001502460500016142
 
-# execution_time1 = total_time1 * 1000 / 400000
-# print(execution_time1)
+avg_total_time = avg(list_t)
+avg_guess_time = avg(list_c)
+list_rest_time = []
+for i in range(len(list_t)):
+    list_rest_time.append(list_t[i] - list_c[i])
 
-# total_time = 0
-# for i in range(400000): 
-#     msg = 6705549532017317 + i
-#     msg_bytes = msg.to_bytes(256, 'big')
-#     enc = rsa.encrypt_bytes(msg_bytes, pub)
-    
-#     start_time = datetime.datetime.now()
-#     dec = rsa.decrypt_bytes(enc, priv)
-#     end_time = datetime.datetime.now()
-#     time_diff = (end_time - start_time)
-#     total_time += time_diff.total_seconds()
+w = 256
+b = 46
+c = 45
+var_rest = statistics.variance(tuple(list_rest_time))
+var_expected_correct = (w - b)*(var_t)
+var_expected_wrong = (w - b + 2*c)*(var_t)
+print(var_rest)
+print(var_expected_correct)
+print(var_expected_wrong)
 
-# test=0
-# print(test.from_bytes(dec,'big'))
+# print(avg(d)) = 1.556249
+# print(std_dev(d)) = 1.3259245106882933
+# print(std_dev(d)**2) = 1.75807580804399
+# print(len(d)) = 1000000
 
-# execution_time = total_time * 1000 / 400000
-# print(execution_time)
+#print(avg(t)) = 0.001926075425887225
+#print(std_dev(t)) = 0.00726641937118175
+#print(std_dev(t)**2)
