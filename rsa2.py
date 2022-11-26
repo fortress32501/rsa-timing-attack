@@ -1,14 +1,27 @@
 import rsa_helper_functions as rsa
 import datetime
 
-p = rsa.genprime(64)
-q = rsa.genprime(64)
-print(p)
-print(q)
-keys = rsa.keysgen2(p,q)
+time=[]
+for i in range(10000000):
+    val = 13524353262345654643564363245353264325436243636346*(i+1)**2
+    start_time = datetime.datetime.now()		
+    val = val % 1352435326234565464356436324535
+    end_time = datetime.datetime.now()
+    time_diff = (end_time - start_time)
+    time_val = time_diff.total_seconds()
+    time.append(time_val)
+
+print(time[1000])
+print(time[1000000])
+print(sum(time)/len(time))
+#p = rsa.genprime(64)
+#q = rsa.genprime(64)
+#print(p)
+#print(q)
+#keys = rsa.keysgen2(p,q)
 #print(keys)
-priv = keys['priv']
-pub = keys['pub']
+#priv = keys['priv']
+#pub = keys['pub']
 
 # total_time = 0
 # for i in range(10000):

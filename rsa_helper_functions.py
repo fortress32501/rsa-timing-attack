@@ -44,16 +44,21 @@ def mod(x, n):
 def modpow(b, e, n):
 	r = b
 	time = 0
+	#start_time = datetime.datetime.now()
 	for i in range(125, -1,-1):
 		if (r*r > n):
-			time += 0.000005
+			time += 0.00000127
 		r = mod(r * r, n)
-		time += 0.00001
+		time += 0.0000012
 		if (e >> i) & 1:
 			if (r*b > n):
-				time += 0.000005
+				time += 0.00000127
 			r = mod(r * b, n)
-			time += 0.00001
+			time += 0.0000012
+	#end_time = datetime.datetime.now()
+	#time_diff = (end_time - start_time)
+	#time_val = time_diff.total_seconds() * 1000000
+	#time = time_val
 	# r = 1
 	# for i in range(256):
 	# 	if (e >> i) & 1:
@@ -74,7 +79,7 @@ def keysgen(p, q):
 	#d = 90589445504412847225937682150835334841693469026962292717634072360150020608911
 
 	e = 302551102930460433882826511866637858843
-	#d = 103850030957717363945220809541239332931
+	d = 103850030957717363945220809541239332931
 	#d = 146385326822834671878142635470210359363
 	#d = 125117678890276017911681722505724846147
 	#d = 93216206991438036961990353058996576323
@@ -85,23 +90,13 @@ def keysgen(p, q):
         # both private and public key must have n stored with them
 	return {'priv': (d, n), 'pub': (e, n)}
 
-def numencrypt(m, pub):
-	#start_time = datetime.datetime.now()		
+def numencrypt(m, pub):	
 	c, time = modpow(m, pub[0], pub[1])
-	#end_time = datetime.datetime.now()
-	#time_diff = (end_time - start_time)
-	#time_val = time_diff.total_seconds() * 1000000
-	#time = time_val
-	return c, time*1000000
+	return c, time#*1000000
 
-def numdecrypt(m, priv):
-	#start_time = datetime.datetime.now()		
+def numdecrypt(m, priv):	
 	c, time = modpow(m, priv[0], priv[1])
-	#end_time = datetime.datetime.now()
-	#time_diff = (end_time - start_time)
-	#time_val = time_diff.total_seconds() * 1000000
-	#time = time_val
-	return c, time*1000000
+	return c, time#*1000000
 
 ########### For better RSA ###########
 # matrix multiplication
