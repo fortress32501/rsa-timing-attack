@@ -28,13 +28,31 @@ def eucalg(a, b):
 	else:
 		return ca
 
-def modpow_guess(b, e, n, size):
-	r = 1
-	for i in range(size, -1, -1):
-		r = (r * r) % n
+def modpow_real(b, e, n):
+	r = b
+	time = 0
+	
+	for i in range(125, -1,-1):
+		r = r*r
+		time += 0.0000012
+		if (r > n):
+			start_time = datetime.datetime.now()
+			r = mod(r, n)
+			end_time = datetime.datetime.now()
+			time_diff = (end_time - start_time)
+			time_val = time_diff.total_seconds()
+			time += time_val
 		if (e >> i) & 1:
-			r = (r * b) % n
-	return r
+			r = r*b
+			time += 0.0000012
+			if (r > n):
+				start_time = datetime.datetime.now()
+				r = mod(r, n)
+				end_time = datetime.datetime.now()
+				time_diff = (end_time - start_time)
+				time_val = time_diff.total_seconds()
+				time += time_val
+	return r, time
 
 def mod(x, n):
 	if (x >= n):
@@ -44,7 +62,6 @@ def mod(x, n):
 def modpow(b, e, n):
 	r = b
 	time = 0
-	#start_time = datetime.datetime.now()
 	for i in range(125, -1,-1):
 		if (r*r > n):
 			time += 0.00000127
@@ -55,7 +72,10 @@ def modpow(b, e, n):
 				time += 0.00000127
 			r = mod(r * b, n)
 			time += 0.0000012
-	#end_time = datetime.datetime.now()
+	return r, time
+
+#start_time = datetime.datetime.now()
+#end_time = datetime.datetime.now()
 	#time_diff = (end_time - start_time)
 	#time_val = time_diff.total_seconds() * 1000000
 	#time = time_val
@@ -64,38 +84,30 @@ def modpow(b, e, n):
 	# 	if (e >> i) & 1:
 	# 		r = mod(r * b, n)
 	# 	b = mod(b * b, n)
-	return r, time
-
 def keysgen(p, q):
 	n = p * q
 	lambda_n = (p - 1) * (q - 1)
-	
-	#e = 65155816516404964423665942839901505741918105972355201219561059350821498022767 #genprime(256)
-	#d = 92398696898745912779430978791596083401900812537362926530750597110273663259535 #eucalg(e, lambda_n)[0]
-	#d = 63450674589416863923538232539424106438583316370952785520886201108295380849551
-	#d = 106872708053410437207377351917682071883559560620567997035682795111262804464527
-	#d = 99635702476078174993404165354639077642730186578965461783216696110768233862031
-	#d = 88780194110079781672444385510074586281486125516561658904517547610026377958287
-	#d = 90589445504412847225937682150835334841693469026962292717634072360150020608911
 
 	e = 302551102930460433882826511866637858843
 	d = 103850030957717363945220809541239332931
-	#d = 146385326822834671878142635470210359363
-	#d = 125117678890276017911681722505724846147
-	#d = 93216206991438036961990353058996576323
-	#d = 98533118974577700453605581300117954627
-	#d = 101191574966147532199413195420678643779
-	#d = 105179258953502279818124616601519677507
 	if d < 0: d += lambda_n
         # both private and public key must have n stored with them
 	return {'priv': (d, n), 'pub': (e, n)}
 
 def numencrypt(m, pub):	
 	c, time = modpow(m, pub[0], pub[1])
-	return c, time#*1000000
+	return c, time
 
 def numdecrypt(m, priv):	
 	c, time = modpow(m, priv[0], priv[1])
+	return c, time
+
+def numencrypt_real(m, pub):	
+	c, time = modpow_real(m, pub[0], pub[1])
+	return c, time#*1000000
+
+def numdecrypt_real(m, priv):	
+	c, time = modpow_real(m, priv[0], priv[1])
 	return c, time#*1000000
 
 ########### For better RSA ###########
